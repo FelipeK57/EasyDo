@@ -32,7 +32,7 @@ function SuccessModal({ title, message, buttonText, isOpen, onClose }) {
           <p className="text-medium">{message}</p>
         </ModalBody>
         <ModalFooter className="flex items-center flex-col">
-          <Button className="font-semibold" color="primary" onPress={onClose}>
+          <Button variant="shadow" className="font-semibold" color="primary" onPress={onClose}>
             {buttonText}
           </Button>
         </ModalFooter>
