@@ -2,6 +2,7 @@ import { Button, Input } from "@nextui-org/react";
 import { useState } from "react";
 import { login } from "../../api/auth";
 import { useNavigate } from "react-router";
+import ErrorModal from "../Global/ErrorModal";
 
 function LoginForm() {
   const navigate = useNavigate();
@@ -12,6 +13,13 @@ function LoginForm() {
     email: "",
     password: "",
   });
+
+  const [errorServer, setErrorServer] = useState("");
+
+  const [isModalErrorOpen, setModalErrorOpen] = useState(false);
+
+  const openModalError = () => setModalErrorOpen(true);
+  const closeModalError = () => setModalErrorOpen(false);
 
   const handleSubmitForm = async () => {
     try {
@@ -36,15 +44,21 @@ function LoginForm() {
       const result = await login(email, password);
       console.log(result);
 
-      if (result.status === 200) {
-        navigate("/dashboard");
+      if (result.error) {
+        setErrorServer(result.error);
+        openModalError();
+        setLoading(false);
+        return;
       }
 
+      localStorage.setItem("token", result.token);
       setLoading(false);
+      navigate("/dashboard");
       setEmail("");
       setPassword("");
     } catch (error) {
       console.error(error);
+      setErrorServer("Ocurrió un problema al iniciar sesión");
       setLoading(false);
     }
   };
@@ -81,6 +95,13 @@ function LoginForm() {
       >
         Iniciar sesión
       </Button>
+      <ErrorModal
+        title={"Ocurrio un problema"}
+        message={errorServer}
+        buttonText={"Vale"}
+        isOpen={isModalErrorOpen}
+        onClose={closeModalError}
+      />
     </form>
   );
 }
